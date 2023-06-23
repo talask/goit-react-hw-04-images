@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Searchbar } from './Searchbar/Searchbar';
 import { Gallery } from "./Gallery/Gallery";
 import { Button } from "./Button/Button";
@@ -11,18 +11,26 @@ export const App = () => {
  
   const [data, setData] = useState([]);
   const [value, setValue] = useState('');
-  const [page, setPage] = useState('');
+  const [page, setPage] = useState(1);
   const [error, setError] = useState('');
   const [modalImage, setModalImage] = useState({url: '', tag: ''});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadMore, setIsLoadMore] = useState(false);
   const [isModal, setIsModal] = useState(false);
+
+  const prevValueRef = useRef(value);
+  const prevPageRef = useRef(page);
   
 
   useEffect(() => {
-    setData([]);
-    loadPixabay(value, page);
-    
+    if (prevValueRef.current !== value || prevPageRef.current !== page) {
+      if(prevValueRef.current !== value) setData([]);
+      loadPixabay(value, page);
+    }
+
+    prevValueRef.current = value;
+    prevPageRef.current = page;
+
   },[value, page]);
 
   function handleSubmit(value, page) {
@@ -37,11 +45,15 @@ export const App = () => {
     try {
       const { totalHits, hits } = await getPixabayAPI(value, page);
          
+        if(hits.length > 0) {
           setData([...data, ...hits]);
           setIsLoadMore(options.page < Math.ceil(totalHits/options.per_page));
-      
+        }else{
+          alert('it\'s empty.... Any images for your query')
+        }
     } catch (error) {
       setError(error);
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

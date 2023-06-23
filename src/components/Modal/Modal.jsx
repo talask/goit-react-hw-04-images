@@ -4,20 +4,25 @@ import { Overlay, ModalDiv } from "./Modal.styled";
 //export const Modal = ({url, tag, onClose}) => {
 export const Modal = ({onClose, tag, url}) => {
     useEffect ( () => {
+      function handleKeyDown(event) {
+        if (event.key === 'Escape') {
+        // Здесь вызываем функцию для закрытия модального окна
+          onClose();
+        }
+      }
+
         document.addEventListener('keydown', handleKeyDown);
-      });
-    
-      useEffect ( () => 
+
+        return () => 
         {
         document.removeEventListener('keydown', handleKeyDown);
-      });
+        };
+
+    }, [onClose]);
     
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') {
-      // Здесь вызываем функцию для закрытия модального окна
-        onClose();
-    }
-  }
+      
+    
+    
       
    
         return (
