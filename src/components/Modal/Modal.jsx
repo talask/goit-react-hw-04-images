@@ -26,12 +26,11 @@ export const Modal = ({onClose, tag, url}) => {
       
    
         return (
-            <Overlay onClick={onClose}>
-           
-                <ModalDiv>
-                    <img src={url} alt={tag} />
-                </ModalDiv>
-             </Overlay>
+          <Overlay onClick={onClose}>
+            <ModalDiv>
+              <img src={url} alt={tag} />
+            </ModalDiv>
+          </Overlay>
         )
   
 }

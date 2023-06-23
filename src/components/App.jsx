@@ -12,7 +12,7 @@ export const App = () => {
   const [data, setData] = useState([]);
   const [value, setValue] = useState('');
   const [page, setPage] = useState(1);
-  const [error, setError] = useState('');
+ // const [error, setError] = useState('');
   const [modalImage, setModalImage] = useState({url: '', tag: ''});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadMore, setIsLoadMore] = useState(false);
@@ -31,34 +31,32 @@ export const App = () => {
     prevValueRef.current = value;
     prevPageRef.current = page;
 
-  },[value, page]);
+    async function loadPixabay(value, page)  {
+      setIsLoading(true);
+      try {
+        const { totalHits, hits } = await getPixabayAPI(value, page);
+           
+          if(hits.length > 0) {
+            setData([...data, ...hits]);
+            setIsLoadMore(options.page < Math.ceil(totalHits/options.per_page));
+          }else{
+            alert('it\'s empty.... Any images for your query')
+          }
+      } catch (error) {
+      //  setError(error);
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+  },[value, page, data]);
 
   function handleSubmit(value, page) {
     setValue(value);
     setPage(page);
   }
 
-   
-
-  async function loadPixabay(value, page)  {
-    setIsLoading(true);
-    try {
-      const { totalHits, hits } = await getPixabayAPI(value, page);
-         
-        if(hits.length > 0) {
-          setData([...data, ...hits]);
-          setIsLoadMore(options.page < Math.ceil(totalHits/options.per_page));
-        }else{
-          alert('it\'s empty.... Any images for your query')
-        }
-    } catch (error) {
-      setError(error);
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  
   function handleLoadMore() {
 
     setPage(page + 1);
